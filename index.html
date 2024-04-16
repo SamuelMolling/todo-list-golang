@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ToDo App</title>
+    <style>
+        .completed {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>ToDo App</h1>
+        <input type="text" v-model="newTaskName" placeholder="Nova Tarefa">
+        <button @click="addTask">Adicionar</button>
+        <ul>
+            <li v-for="task in tasks" :key="task._id" :class="{ 'completed': task.completed }">
+                <span @click="markTaskAsCompleted(task._id)" v-if="!task.completed">{{ task.name }}</span>
+                <del v-else>{{ task.name }}</del>
+                <button @click="deleteTask(task._id)">Excluir</button>
+                <button @click="markTaskAsCompleted(task._id)" v-if="!task.completed">Concluir</button>
+            </li>
+        </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                tasks: [],
+                newTaskName: ''
+            },
+            methods: {
+                addTask() {
+                    if (!this.newTaskName) {
+                        console.error('Nome da tarefa não especificado');
+                        return;
+                    }
+                    fetch('http://localhost:8080/tasks', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: this.newTaskName
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao adicionar a tarefa');
+                        }
+                        this.fetchTasks();
+                        this.newTaskName = '';
+                    })
+                    .catch(error => {
+                        console.error('Erro ao adicionar a tarefa:', error);
+                    });
+                },
+                deleteTask(taskId) {
+                    fetch(`http://localhost:8080/tasks/${taskId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao deletar a tarefa');
+                        }
+                        this.fetchTasks();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao deletar a tarefa:', error);
+                    });
+                },
+                markTaskAsCompleted(taskId) {
+                    fetch(`http://localhost:8080/tasks/${taskId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao marcar a tarefa como concluída');
+                        }
+                        this.fetchTasks();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao marcar a tarefa como concluída:', error);
+                    });
+                },
+                fetchTasks() {
+                    fetch('http://localhost:8080/tasks')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.tasks = data;
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar as tarefas:', error);
+                    });
+                }
+            },
+            mounted() {
+                this.fetchTasks();
+            }
+        });
+    </script>
+</body>
+</html>

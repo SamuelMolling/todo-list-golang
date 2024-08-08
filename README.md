@@ -6,10 +6,9 @@
 git clone https://github.com/SamuelMolling/todo-list-golang.git
 cd todo-list-golang
 ```
-2. **MongoDB Configuration:** Set up your public and private keys for MongoDB Atlas.
-```bash
-export ATLAS_PUBLIC_KEY=<your-public-key>
-export ATLAS_PRIVATE_KEY=<your-private-key>
+2. **MongoDB Configuration:** Set up your cluster and configure your connection string on line 32.
+```
+mongoURI := "mongodb+srv://<USERNAME>:<PASSWORD>@<CLUTER_ENDPOINT>/?retryWrites=true&w=majority&appName=demo1"
 ```
 3. Run the Application: Execute the following command to start the server.
 ```bash

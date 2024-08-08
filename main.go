@@ -29,7 +29,7 @@ type Task struct {
 
 func init() {
 	// Inicializa o cliente MongoDB
-	mongoURI := "mongodb+srv://demo1:demo1@demo1.f7x641l.mongodb.net/?retryWrites=true&w=majority&appName=demo1"
+	mongoURI := "mongodb+srv://<USERNAME>:<PASSWORD>@<CLUTER_ENDPOINT>/?retryWrites=true&w=majority&appName=demo1"
 	if mongoURI == "" {
 		log.Fatal("MONGODB_URI não foi especificado")
 	}
